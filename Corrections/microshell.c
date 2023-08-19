@@ -55,7 +55,6 @@ int	main(int argc, char *argv[], char *env[])
 			i++;
 		if (strcmp(argv[0], "cd") == 0) //cd
 		{
-			printf("mon test cd : %d\n", chdir("test_directory"));
 			if (i != 2)
 				ft_putstr_fd2("error: cd: bad arguments", NULL);
 			else if (chdir(argv[1]) != 0)
