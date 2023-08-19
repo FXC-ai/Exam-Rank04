@@ -21,17 +21,6 @@ void	ft_put2str_fd(char *str, char *arg, int out)
 	write(2, "\n", 1);
 }
 
-int	ft_putstr_fd2(char *str, char *arg)
-{
-	while (*str)
-		write(2, str++, 1);
-	if (arg)
-		while(*arg)
-			write(2, arg++, 1);
-	write(2, "\n", 1);
-	return (1);
-}
-
 //0 => READ
 //1 => WRITE
 
@@ -96,8 +85,6 @@ int main (int argc, char *argv[], char *env[])
 				close(pipe_fd[0]);
 				close(pipe_fd[1]);
 			}
-
-
 		}
 
 	}
