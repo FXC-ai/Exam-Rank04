@@ -44,10 +44,12 @@ int main (int argc, char *argv[], char *env[])
 {
 	int i;
 	char *print_str;
-
+	int pipe_fd[2];
+	int tmp_fd;
 
 	i = 0;
-
+	tmp_fd = dup(STDIN_FILENO);
+	printf("tmp_fd = %d\n", tmp_fd);
 	while (argv[i] && argv[i + 1])
 	{
 		argv = &argv[i + 1];
@@ -64,16 +66,28 @@ int main (int argc, char *argv[], char *env[])
 			if (fork() == 0)
 			{
 				argv[i] = NULL;
-
+				dup2(tmp_fd, STDIN_FILENO);
+				close(tmp_fd);
 				execve(argv[0], argv, env);
 				ft_put2str_fd("error: cannot execute ", argv[0], 2);
 				return 1;
 			}
 			else
 			{
-				waitpid(-1, NULL, WUNTRACED);
+				close(tmp_fd);
+				while(waitpid(-1, NULL, WUNTRACED) != -1)
+					;
+				tmp_fd = dup(STDIN_FILENO);
 			}	
 		}
+		// else if (i != 0 && argv[i][0] == '|'))
+		// {
+
+
+
+		// }
+
+
 
 		//printf("argv[%d] = %s\n", i, argv[i]);
 	}
