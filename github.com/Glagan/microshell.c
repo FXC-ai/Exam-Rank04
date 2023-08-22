@@ -48,8 +48,7 @@ int	main(int argc, char *argv[], char *env[])
 		argv = &argv[i + 1];	//the new argv start after the ; or |
 		i = 0;
 
-		//debug_str = strdup(argv[i]);
-		//(void) debug_str;
+
 		//count until we have all informations to execute the next child;
 		while (argv[i] && strcmp(argv[i], ";") && strcmp(argv[i], "|"))
 			i++;
@@ -62,7 +61,7 @@ int	main(int argc, char *argv[], char *env[])
 		}
 		else if (i != 0 && (argv[i] == NULL || strcmp(argv[i], ";") == 0)) //exec in stdout
 		{
-			if ( fork() == 0)
+			if (fork() == 0)
 			{
 				if (ft_execute(argv, i, tmp_fd, env))
 					return (1);

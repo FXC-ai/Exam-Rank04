@@ -29,10 +29,12 @@ int main (int argc, char *argv[], char *env[])
 	int i;
 	int pipe_fd[2];
 	(void) argc;
+	int tmp_fd;
 
 
 	i = 0;
 
+	tmp_fd = dup(STDIN_FILENO);
 	while (argv[i] && argv[i + 1])
 	{
 		argv = &argv[i + 1];
@@ -55,6 +57,9 @@ int main (int argc, char *argv[], char *env[])
 		{
 			if (fork() == 0)
 			{
+				dup2(tmp_fd, STDIN_FILENO);
+				close(tmp_fd);
+
 				argv[i] = NULL;
 				execve(argv[0], argv, env);
 				ft_put2str_fd("error: cannot execute ", argv[0], 2);
@@ -62,8 +67,10 @@ int main (int argc, char *argv[], char *env[])
 			}
 			else
 			{
+				close(tmp_fd);
 				while(waitpid(-1, NULL, WUNTRACED) != -1)
 					;
+				dup(STDIN_FILENO);
 			}	
 		}
 		else if (i != 0 && argv[i][0] == '|')
@@ -71,23 +78,27 @@ int main (int argc, char *argv[], char *env[])
 			pipe(pipe_fd);
 			if (fork() == 0)
 			{
-				argv[i] = NULL;
 				dup2(pipe_fd[1], STDOUT_FILENO);
 				close(pipe_fd[0]);
 				close(pipe_fd[1]);
+				
+				dup2(tmp_fd, STDIN_FILENO);
+				close(tmp_fd);
+
+				argv[i] = NULL;
 				execve(argv[0], argv, env);
 				ft_put2str_fd("error: cannot execute ", argv[0], 2);
 				return 1;
 			}
 			else
 			{
-				dup2(pipe_fd[0], STDIN_FILENO);
-				close(pipe_fd[0]);
 				close(pipe_fd[1]);
+				close(tmp_fd);
+				tmp_fd = pipe_fd[0];
 			}
 		}
 
 	}
-
+	close(tmp_fd);
 	return 0;
 }
